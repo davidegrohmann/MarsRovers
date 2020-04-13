@@ -4,6 +4,7 @@ namespace MarsRover
 {
     public interface IPlateau
     {
+        Coordinates Size { get; }
         void Land(IRover rover);
         void Move(IRover rover, Coordinates to);
     }

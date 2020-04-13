@@ -8,14 +8,14 @@ namespace MarsRover
     {
         private readonly TextReader _in;
 
-        internal Parser(TextReader tr)
+        public Parser(TextReader tr)
         {
             _in = tr ?? throw new ArgumentNullException(nameof(tr));
         }
 
-        public MarsPlateau? ParseMarsPlateau()
+        public MarsPlateau? ParsePlateau()
         {
-            var s = _in.ReadLine();
+            var s = SkipEmptyLines();
             if (s == null)
             {
                 return null;
@@ -24,7 +24,7 @@ namespace MarsRover
             var coordinates = s.Split(' ');
             if (coordinates.Length != 2)
             {
-                throw new ArgumentException($"Malformed mars plateau coordinates: '{s}");
+                throw new ArgumentException($"Malformed mars plateau coordinates: '{s}'");
             }
 
             return new MarsPlateau(ParseCoordinates(coordinates));
@@ -32,7 +32,7 @@ namespace MarsRover
 
         public MarsRover? ParseRover(uint id)
         {
-            var l = _in.ReadLine();
+            var l = SkipEmptyLines();
             if (l == null)
             {
                 return null;
@@ -41,9 +41,8 @@ namespace MarsRover
             var landing = l.Split(' ');
             if (landing.Length != 3)
             {
-                throw new ArgumentException($"Malformed mars rover landing coordinates and direction: '{l}");
+                throw new ArgumentException($"Malformed mars rover landing coordinates and direction: '{l}'");
             }
-
 
             var coordinates = ParseCoordinates(landing);
             var direction = ParseDirection(landing[2]);
@@ -62,7 +61,7 @@ namespace MarsRover
             }
             catch (Exception e)
             {
-                throw new ArgumentException("Unable to parse plateau coordinates", e);
+                throw new ArgumentException($"Malformed coordinates: '{coordinates[0]} {coordinates[1]}'", e);
             }
 
             if (x < 0 || y < 0)
@@ -81,7 +80,7 @@ namespace MarsRover
                 "E" => Direction.E,
                 "S" => Direction.S,
                 "W" => Direction.W,
-                _ => throw new ArgumentException($"Unknown direction {direction}")
+                _ => throw new ArgumentException($"Unknown direction: '{direction}'")
             };
         }
 
@@ -108,8 +107,19 @@ namespace MarsRover
                 'M' => Command.M,
                 'L' => Command.L,
                 'R' => Command.R,
-                _ => throw new ArgumentException($"Unknown command {c}")
+                _ => throw new ArgumentException($"Unknown command: '{c}'")
             };
+        }
+        
+        private string? SkipEmptyLines()
+        {
+            string s;
+            do
+            {
+                s = _in.ReadLine();
+            } while (s == string.Empty);
+
+            return s;
         }
     }
 }

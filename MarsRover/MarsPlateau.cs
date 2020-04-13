@@ -5,12 +5,12 @@ namespace MarsRover
 {
     public class MarsPlateau : IPlateau
     {
-        private readonly Coordinates _size;
+        public Coordinates Size { get; }
         private readonly IDictionary<Coordinates, IRover> _heldPositions = new Dictionary<Coordinates, IRover>();
 
         public MarsPlateau(Coordinates c)
         {
-            _size = c;
+            Size = c;
         }
 
         public void Land(IRover rover)
@@ -24,7 +24,7 @@ namespace MarsRover
             if (_heldPositions.TryGetValue(rover.Position, out var other))
             {
                 throw new CrashedIntoRover(
-                    $"Rover {rover.Id} landed onto another Rover {other.Id} at [{rover.Position.X}, {rover.Position.Y}] ");
+                    $"Rover {rover.Id} landed onto Rover {other.Id} at [{rover.Position.X}, {rover.Position.Y}]");
             }
 
             _heldPositions.Add(rover.Position, rover);
@@ -56,7 +56,7 @@ namespace MarsRover
 
         private bool OutsidePlateau(Coordinates roverPosition)
         {
-            return roverPosition.X > _size.X || roverPosition.Y > _size.Y || roverPosition.X < 0 || roverPosition.Y < 0;
+            return roverPosition.X > Size.X || roverPosition.Y > Size.Y || roverPosition.X < 0 || roverPosition.Y < 0;
         }
     }
 }

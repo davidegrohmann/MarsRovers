@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Microsoft.VisualBasic;
+﻿using System.Collections.Generic;
 
 namespace MarsRover
 {
     public class Houston
     {
-        private readonly MarsPlateau _plateau;
-        private readonly List<MarsRover> _rovers;
+        private readonly IPlateau _plateau;
+        private readonly List<IRover> _rovers;
 
-        public Houston(MarsPlateau plateau, List<MarsRover> rovers)
+        public Houston(IPlateau plateau, List<IRover> rovers)
         {
             _plateau = plateau;
             _rovers = rovers;
         }
 
-        internal void Control(TextWriter tw, TextWriter terr)
+        public void Control(IReporter reporter)
         {
             foreach (var rover in _rovers)
             {
@@ -24,18 +21,17 @@ namespace MarsRover
                 {
                     rover.LandOn(_plateau);
                     rover.MoveOn(_plateau);
-                    tw.WriteLine($"{rover.Position.X} {rover.Position.Y} {rover.Direction} [{rover.Id} Success]");
+                    reporter.Report(rover, Status.Ok);
                 }
                 catch (FallOffPlateau e)
                 {
-                    terr.WriteLine(e.Message);
-                    tw.WriteLine(
-                        $"{rover.Position.X} {rover.Position.Y} {rover.Direction} [{rover.Id} Fall Off Plateau]");
+                    reporter.Error(e.Message);
+                    reporter.Report(rover, Status.FellOff);
                 }
                 catch (CrashedIntoRover e)
                 {
-                    terr.WriteLine(e.Message);
-                    tw.WriteLine($"{rover.Position.X} {rover.Position.Y} {rover.Direction} [{rover.Id} Crashed]");
+                    reporter.Error(e.Message);
+                    reporter.Report(rover, Status.Crashed);
                 }
             }
         }

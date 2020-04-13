@@ -3,24 +3,24 @@ using System.Collections.Generic;
 
 namespace MarsRover
 {
-    internal enum Command
+    public enum Command
     {
-        M,  L, R
+        M, L, R
     }
 
-    internal enum Direction
+    public enum Direction
     {
         N, E, S, W
     }
 
-    public class MarsRover
+    public class MarsRover : IRover
     {
-        internal readonly uint Id;
-        internal Direction Direction { get; private set; }
-        internal Coordinates Position { get; private set; }
+        public uint Id { get; }
+        public Direction Direction { get; private set; }
+        public Coordinates Position { get; private set; }
         private readonly List<Command> _commands;
 
-        internal MarsRover(uint id, Coordinates landing, Direction direction, List<Command> commands)
+        public MarsRover(uint id, Coordinates landing, Direction direction, List<Command> commands)
         {
             Id = id;
             Position = landing;
@@ -28,12 +28,12 @@ namespace MarsRover
             _commands = commands;
         }
 
-        public void LandOn(MarsPlateau plateau)
+        public void LandOn(IPlateau plateau)
         {
             plateau.Land(this);
         }
 
-        public void MoveOn(MarsPlateau marsPlateau)
+        public void MoveOn(IPlateau marsPlateau)
         {
             foreach (var command in _commands)
             {
@@ -58,7 +58,7 @@ namespace MarsRover
 
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(command), command, null);
                 }
             }
         }
@@ -73,7 +73,7 @@ namespace MarsRover
                 Direction.E => new Coordinates(x + 1, y),
                 Direction.S => new Coordinates(x, y - 1),
                 Direction.W => new Coordinates(x - 1, y),
-                _ => throw new ArgumentOutOfRangeException($"{Direction}")
+                _ => throw new ArgumentOutOfRangeException(nameof(Direction), Direction, null)
             };
         }
 

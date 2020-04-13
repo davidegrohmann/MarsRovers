@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection.PortableExecutable;
 
 namespace MarsRover
 {
-    public class MarsPlateau
+    public class MarsPlateau : IPlateau
     {
         private readonly Coordinates _size;
-        private readonly IDictionary<Coordinates, MarsRover> _heldPositions = new Dictionary<Coordinates, MarsRover>();
+        private readonly IDictionary<Coordinates, IRover> _heldPositions = new Dictionary<Coordinates, IRover>();
 
-        internal MarsPlateau(Coordinates c)
+        public MarsPlateau(Coordinates c)
         {
             _size = c;
         }
 
-        internal void Land(MarsRover rover)
+        public void Land(IRover rover)
         {
             if (OutsidePlateau(rover.Position))
             {
@@ -31,7 +30,7 @@ namespace MarsRover
             _heldPositions.Add(rover.Position, rover);
         }
 
-        internal bool? Move(MarsRover rover, Coordinates to)
+        public void Move(IRover rover, Coordinates to)
         {
             if (!_heldPositions.TryGetValue(rover.Position, out var self) || self != rover)
             {
@@ -53,26 +52,11 @@ namespace MarsRover
 
             _heldPositions.Remove(rover.Position);
             _heldPositions.Add(to, rover);
-            return true;
         }
 
         private bool OutsidePlateau(Coordinates roverPosition)
         {
             return roverPosition.X > _size.X || roverPosition.Y > _size.Y || roverPosition.X < 0 || roverPosition.Y < 0;
-        }
-    }
-
-    internal class FallOffPlateau : Exception
-    {
-        public FallOffPlateau(string message) : base(message)
-        {
-        }
-    }
-
-    internal class CrashedIntoRover : Exception
-    {
-        public CrashedIntoRover(string message) : base(message)
-        {
         }
     }
 }

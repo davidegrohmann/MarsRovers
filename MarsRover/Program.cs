@@ -10,8 +10,8 @@ namespace MarsRover
         {
             try
             {
-                MarsPlateau plateau;
-                var rovers = new List<MarsRover>();
+                IPlateau plateau;
+                var rovers = new List<IRover>();
                 Console.WriteLine(args[0]);
                 using (var tr = args.Length <= 0 ? Console.In : new StreamReader(args[0]))
                 {
@@ -30,7 +30,7 @@ namespace MarsRover
                 }
 
                 var h = new Houston(plateau, rovers);
-                h.Control(Console.Out, Console.Error);
+                h.Control(new PrintReporter(Console.Out, Console.Error));
             }
             catch (Exception e)
             {

@@ -13,7 +13,7 @@ namespace MarsRover
             _in = tr ?? throw new ArgumentNullException(nameof(tr));
         }
 
-        internal MarsPlateau ParseMarsPlateau()
+        public MarsPlateau? ParseMarsPlateau()
         {
             var s = _in.ReadLine();
             if (s == null)
@@ -30,7 +30,7 @@ namespace MarsRover
             return new MarsPlateau(ParseCoordinates(coordinates));
         }
 
-        internal MarsRover ParseRover(uint id)
+        public MarsRover? ParseRover(uint id)
         {
             var l = _in.ReadLine();
             if (l == null)
@@ -73,7 +73,7 @@ namespace MarsRover
             return new Coordinates(x, y);
         }
 
-        private static Direction ParseDirection(string direction)
+        private static Direction ParseDirection(string? direction)
         {
             return direction switch
             {
@@ -85,7 +85,7 @@ namespace MarsRover
             };
         }
 
-        private static List<Command> ParseCommands(string l)
+        private static List<Command> ParseCommands(string? l)
         {
             var commands = new List<Command>();
             if (l == null)

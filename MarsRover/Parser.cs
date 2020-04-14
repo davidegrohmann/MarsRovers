@@ -15,7 +15,7 @@ namespace MarsRover
 
         public MarsPlateau? ParsePlateau()
         {
-            var s = SkipEmptyLines();
+            var s = _in.ReadLine();
             if (s == null)
             {
                 return null;
@@ -32,7 +32,7 @@ namespace MarsRover
 
         public MarsRover? ParseRover(uint id)
         {
-            var l = SkipEmptyLines();
+            var l = _in.ReadLine();
             if (l == null)
             {
                 return null;
@@ -109,17 +109,6 @@ namespace MarsRover
                 'R' => Command.R,
                 _ => throw new ArgumentException($"Unknown command: '{c}'")
             };
-        }
-        
-        private string? SkipEmptyLines()
-        {
-            string s;
-            do
-            {
-                s = _in.ReadLine();
-            } while (s == string.Empty);
-
-            return s;
         }
     }
 }

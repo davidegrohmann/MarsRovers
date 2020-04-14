@@ -84,41 +84,6 @@ MMRMMRMRRM");
         }
 
         [Test]
-        public void ShouldParseConfigurationWithExtraEmptyLines()
-        {
-            var r = new StringReader(@"5 5
-
-1 2 N
-LMLMLMLMM
-
-3 3 E
-MMRMMRMRRM
-
-");
-
-            var parser = new Parser(r);
-            var plateau = parser.ParsePlateau();
-            var one = parser.ParseRover(1);
-            var two = parser.ParseRover(2);
-            var three = parser.ParseRover(3);
-            
-            Assert.NotNull(plateau);
-            Assert.AreEqual(new Coordinates(5, 5), plateau.Size);
-            
-            Assert.NotNull(one);
-            Assert.AreEqual(1, one.Id);
-            Assert.AreEqual(Direction.N, one.Direction);
-            Assert.AreEqual(new Coordinates(1, 2), one.Position);
-            
-            Assert.NotNull(two);
-            Assert.AreEqual(2, two.Id);
-            Assert.AreEqual(Direction.E, two.Direction);
-            Assert.AreEqual(new Coordinates(3, 3), two.Position);
-
-            Assert.Null(three);
-        }
-        
-        [Test]
         public void ShouldReportErrorOnParsingPlateauNoNumber()
         {
             var r = new StringReader(@"5 A");
@@ -346,20 +311,60 @@ LMLMLMLMM
 ");
 
             var parser = new Parser(r);
-            
-            var one = parser.ParseRover(0);
-            Assert.NotNull(one);
-            Assert.AreEqual(Direction.N, one.Direction);
-            Assert.AreEqual(new Coordinates(1,2), one.Position);
-            Assert.AreEqual(0, one.Id);
             try
             {
-                parser.ParseRover(1);
+                parser.ParseRover(0);
                 Assert.Fail();
             }
             catch (ArgumentException e)
             {
-                Assert.AreEqual("Malformed mars rover landing coordinates and direction: 'LMLMLMLMM'", e.Message);
+                Assert.AreEqual("Malformed mars rover landing coordinates and direction: ''", e.Message);
+            }
+        }
+        
+        [Test]
+        public void ShouldReportErrorConfigurationWithExtraEmptyLines()
+        {
+            var r = new StringReader(@"5 5
+
+1 2 N
+LMLMLMLMM
+");
+
+            var parser = new Parser(r);
+            var plateau = parser.ParsePlateau();
+            Assert.NotNull(plateau);
+            Assert.AreEqual(new Coordinates(5, 5), plateau.Size);
+
+            try
+            {
+                parser.ParseRover(0);
+                Assert.Fail();
+            }
+            catch (ArgumentException e)
+            {
+                Assert.AreEqual("Malformed mars rover landing coordinates and direction: ''", e.Message);
+            }
+        }
+        
+        [Test]
+        public void ShouldReportErrorConfigurationStartEmptyLines()
+        {
+            var r = new StringReader(@"
+
+5 5
+");
+
+            var parser = new Parser(r);
+
+            try
+            {
+                parser.ParsePlateau();
+                Assert.Fail();
+            }
+            catch (ArgumentException e)
+            {
+                Assert.AreEqual("Malformed mars plateau coordinates: ''", e.Message);
             }
         }
     }
